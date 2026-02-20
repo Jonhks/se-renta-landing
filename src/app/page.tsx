@@ -1,7 +1,53 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import ContactModal from "@/components/ContactModal";
+import InstallModal from "@/components/InstallModal";
 
 export default function Home() {
   const appUrl = "https://se-renta-app-web.vercel.app/";
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  const testimonials = [
+    {
+      quote:
+        "Llevaba semanas viendo los mismos anuncios falsos en grupos de Facebook. Con este mapa pude ver opciones que apenas habían colgado el letrero en la calle ayer.",
+      author: "Usuario Beta",
+      role: "Buscando en CDMX",
+      color: "from-blue-500 to-purple-500",
+    },
+    {
+      quote:
+        "Me robaron $6,000 MXN de depósito en un grupo de Facebook por un depa que ni existía. Si hubiera existido esta app para verificar antes, me habría ahorrado los ahorros de meses.",
+      author: "Víctima de fraude",
+      role: "Ahora revisa en SE RENTA",
+      color: "from-red-500 to-orange-500",
+    },
+    {
+      quote:
+        "Fui a ver un depa que decía 'disponible' en un portal grande y resultó que ya estaba rentado hace 1 mes. Aquí la comunidad lo marca gris y ya no pierdes el tiempo.",
+      author: "Usuario Activo",
+      role: "Ahorrando tiempo en el tráfico",
+      color: "from-green-400 to-emerald-600",
+    },
+    {
+      quote:
+        "Me encanta que yo misma puedo ir subiendo los letreros que veo por mi calle. Es como armar nuestra propia red de vecinos para buscar depa sin inmobiliarias abusivas.",
+      author: "Aportadora Top",
+      role: "Más de 15 reportes confirmados",
+      color: "from-pink-500 to-rose-500",
+    },
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 25000);
+    return () => clearInterval(timer);
+  }, [testimonials.length]);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/20">
@@ -20,6 +66,10 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="max-w-3xl mb-32 md:mb-48 animate-fade-in-up delay-100">
+          <div className="inline-block px-4 py-1.5 mb-6 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-sm font-medium tracking-wide">
+            🚧 Proyecto en fase de desarrollo (MVP) — Algunas funcionalidades
+            aún no están listas
+          </div>
           <h1 className="text-5xl md:text-7xl font-semibold tracking-tight leading-tight mb-8">
             Encuentra un depa <br />
             <span className="text-gray-400">validado por la comunidad.</span>
@@ -66,6 +116,49 @@ export default function Home() {
                 No somos un data broker. Tus aportaciones están resguardadas de
                 forma segura y se utilizan exclusivamente para mantener el mapa
                 limpio y confiable.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Cómo Funciona */}
+        <section className="mb-32 md:mb-48 bg-neutral-900/50 rounded-3xl p-8 md:p-12 border border-white/5 animate-fade-in-up delay-[250ms]">
+          <h2 className="text-3xl font-semibold mb-8 text-center">
+            ¿Qué pasa después de abrir el mapa?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-2xl mb-6">
+                1️⃣
+              </div>
+              <h3 className="text-xl font-medium mb-3">
+                Encuentras reportes reales
+              </h3>
+              <p className="text-gray-400">
+                Navega por el mapa y selecciona los pines para ver detalles de
+                renta en tu zona.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-2xl mb-6">
+                2️⃣
+              </div>
+              <h3 className="text-xl font-medium mb-3">
+                Puedes confirmar reportes
+              </h3>
+              <p className="text-gray-400">
+                Si un reporte es falso o ya se rentó, puedes votar para ayudar a
+                los demás.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-2xl mb-6">
+                3️⃣
+              </div>
+              <h3 className="text-xl font-medium mb-3">Tu reputación suma</h3>
+              <p className="text-gray-400">
+                Tus aportes correctos y confirmados construyen tu Score en la
+                comunidad.
               </p>
             </div>
           </div>
@@ -191,8 +284,97 @@ export default function Home() {
           </div>
         </section>
 
+        {/* App PWA Installation */}
+        <section className="mb-32 md:mb-48 border-t border-white/10 pt-20 animate-fade-in-up delay-500">
+          <div className="flex flex-col md:flex-row gap-12 items-center bg-white/5 border border-white/10 rounded-3xl p-10 md:p-16">
+            <div className="flex-1">
+              <div className="inline-block px-3 py-1 mb-6 rounded-full bg-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+                Experiencia Nativa
+              </div>
+              <h2 className="text-3xl font-semibold mb-6">
+                Instala la App (PWA)
+              </h2>
+              <p className="text-gray-400 text-lg leading-relaxed mb-8">
+                Para el mejor funcionamiento, notificaciones y comodidad al
+                caminar por la calle, te recomendamos instalar SE RENTA
+                directamente en la pantalla de inicio de tu celular. No ocupa
+                espacio y siempre tendrás la información a la mano.
+              </p>
+              <button
+                onClick={() => setIsInstallModalOpen(true)}
+                className="px-8 py-3 bg-white text-black font-semibold rounded-full hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+              >
+                📱 Ver pasos de instalación
+              </button>
+            </div>
+            <div className="flex-1 w-full flex justify-center">
+              <div className="w-48 h-48 bg-gradient-to-tr from-neutral-800 to-neutral-900 rounded-3xl shadow-2xl border border-white/10 flex items-center justify-center relative overflow-hidden group">
+                <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="text-7xl group-hover:scale-110 transition-transform">
+                  📲
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonios / Evidencia Social */}
+        <section className="mb-32 md:mb-48 animate-fade-in-up delay-[550ms]">
+          <h2 className="text-3xl font-semibold mb-12 text-center">
+            Solucionando un problema real
+          </h2>
+          <div className="relative max-w-4xl mx-auto h-[280px] sm:h-[220px]">
+            {testimonials.map((testimony, index) => (
+              <div
+                key={index}
+                className={`absolute top-0 left-0 w-full p-8 bg-white/5 border border-white/10 rounded-2xl transition-all duration-700 ease-in-out ${
+                  index === currentTestimonial
+                    ? "opacity-100 translate-x-0 z-10"
+                    : "opacity-0 translate-x-12 z-0 pointer-events-none"
+                }`}
+              >
+                <div className="text-4xl absolute top-6 right-6 opacity-20">
+                  "
+                </div>
+                <p className="text-gray-300 text-lg sm:text-xl italic mb-8 pr-8">
+                  {testimony.quote}
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-12 h-12 rounded-full bg-gradient-to-tr ${testimony.color}`}
+                  ></div>
+                  <div>
+                    <div className="font-medium text-white">
+                      {testimony.author}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {testimony.role}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Slider Controls */}
+            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex gap-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
+                    index === currentTestimonial
+                      ? "bg-white w-6"
+                      : "bg-white/30 hover:bg-white/50"
+                  }`}
+                  aria-label={`Ir al testimonio ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Call to Action / Contact */}
-        <section className="text-center mb-24 animate-fade-in-up delay-500">
+        <section className="text-center mb-24 mt-40 animate-fade-in-up delay-500">
           <h2 className="text-3xl md:text-5xl font-semibold mb-8">
             Ayúdanos a mejorar
           </h2>
@@ -201,12 +383,12 @@ export default function Home() {
             un bug? ¿Tienes una idea para hacerlo mejor?
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a
-              href="mailto:hola@serenta.com"
-              className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-medium rounded-full transition-colors border border-white/10 flex items-center justify-center gap-2"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-medium rounded-full transition-colors border border-white/10 flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
             >
               ✉️ Envíanos un mensaje
-            </a>
+            </button>
           </div>
         </section>
 
@@ -216,6 +398,7 @@ export default function Home() {
           <div className="mt-4 md:mt-0 flex gap-4">
             <Link
               href={appUrl}
+              target="_blank"
               className="hover:text-white transition-colors"
             >
               Volver a la App ↗
@@ -223,6 +406,18 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      {/* Contact Modal */}
+      <ContactModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+
+      {/* Install Modal */}
+      <InstallModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+      />
     </div>
   );
 }
