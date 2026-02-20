@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
+import UpdateModal from "@/components/UpdateModal";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <UpdateModal />
         <ToastContainer
           theme="dark"
           position="bottom-right"
