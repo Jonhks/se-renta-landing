@@ -35,28 +35,25 @@ export default function ContactModal({
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     setErrorMsg("");
-    try {
-      // ⚠️ Firebase está comentado hasta que lo configures.
-      // Descomenta el siguiente bloque cuando agregues tus variables de entorno a .env y inicialices lib/firebase.ts
 
-      await addDoc(collection(db, "contact_messages"), {
+    try {
+      await addDoc(collection(db, "feedback"), {
         type: data.type,
-        message: data.message,
+        message: data.message.trim(),
+        origin: "landing",
+        resolved: false,
+        userAgent: navigator.userAgent,
+        environment: process.env.NODE_ENV,
         createdAt: serverTimestamp(),
       });
 
-      // Simulamos la espera por ahora
-      // await new Promise(resolve => setTimeout(resolve, 800));
-
-      toast.success("¡Mensaje enviado correctamente! Gracias por ayudarnos.");
+      toast.success("¡Mensaje enviado correctamente! Gracias por ayudarnos 🙌");
       reset();
-
-      // Cerramos el modal
       onClose();
     } catch (error: any) {
       console.error("Error submitting contact form:", error);
       setErrorMsg(
-        "Ocurrió un error al enviar tu mensaje. Asegúrate de que configuraste Firebase.",
+        "Ocurrió un error al enviar tu mensaje. Verifica configuración de Firebase.",
       );
     } finally {
       setIsSubmitting(false);
