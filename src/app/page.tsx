@@ -82,12 +82,14 @@ export default function Home() {
             aún no están listas
           </div>
           <h1 className="text-5xl md:text-7xl font-semibold tracking-tight leading-tight mb-8">
-            Encuentra un depa <br />
-            <span className="text-gray-400">validado por la comunidad.</span>
+            Evita fraudes y perder dinero buscando depa. <br />
+            <span className="text-gray-400">
+              De la comunidad para la comunidad{" "}
+            </span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
-            Un mapa en tiempo real enfocado 100% en opciones reales y activas.
-            Ni portales saturados, ni grupos de Facebook desordenados.
+            Un mapa comunitario donde las personas confirman qué está disponible
+            y reportan posibles fraudes.
           </p>
           {/* Scroll Down Indicator */}
           <div
