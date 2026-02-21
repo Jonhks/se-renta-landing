@@ -10,6 +10,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const testimonials = [
     {
@@ -43,6 +44,16 @@ export default function Home() {
   ];
 
   useEffect(() => {
+    const handleScroll = () => {
+      // Hide button when scrolled past 100px
+      setIsScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 25000);
@@ -51,7 +62,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/20">
-      <main className="max-w-5xl mx-auto px-6 py-20 md:py-32 overflow-hidden">
+      <main className="max-w-5xl mx-auto px-6 pt-20 pb-32 md:pt-32 md:pb-48 overflow-hidden">
         {/* Header / Nav */}
         <header className="flex justify-between items-center mb-24 md:mb-32 animate-fade-in-up">
           <div className="text-xl font-bold tracking-tighter">SE RENTA</div>
@@ -65,7 +76,7 @@ export default function Home() {
         </header>
 
         {/* Hero Section */}
-        <section className="max-w-3xl mb-32 md:mb-48 animate-fade-in-up delay-100">
+        <section className="max-w-5xl mb-32 md:mb-48 animate-fade-in-up delay-100">
           <div className="inline-block px-4 py-1.5 mb-6 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-sm font-medium tracking-wide">
             🚧 Proyecto en fase de desarrollo (MVP) — Algunas funcionalidades
             aún no están listas
@@ -78,14 +89,45 @@ export default function Home() {
             Un mapa en tiempo real enfocado 100% en opciones reales y activas.
             Ni portales saturados, ni grupos de Facebook desordenados.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href={appUrl}
-              target="_blank"
-              className="px-8 py-4 bg-white text-black font-semibold rounded-full hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2"
-            >
-              Abrir Mapa 📍
-            </Link>
+          {/* Scroll Down Indicator */}
+          <div
+            className={`w-full flex justify-center mt-12 transition-opacity duration-500 ${
+              isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
+            }`}
+          >
+            <div className="flex flex-col items-center text-white/50 animate-bounce cursor-default">
+              <span className="text-sm font-medium mb-1 tracking-widest uppercase">
+                Descubre más abajo
+              </span>
+              <div className="flex flex-col items-center">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+                <svg
+                  className="w-6 h-6 -mt-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -406,6 +448,17 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] pointer-events-none">
+        <Link
+          href={appUrl}
+          target="_blank"
+          className="pointer-events-auto px-6 md:px-8 py-3 md:py-4 bg-white text-black font-bold text-base md:text-md rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur-sm"
+        >
+          Abrir Mapa 📍
+        </Link>
+      </div>
 
       {/* Contact Modal */}
       <ContactModal
