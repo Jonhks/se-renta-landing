@@ -1,16 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ContactModal from "@/components/ContactModal";
 import InstallModal from "@/components/InstallModal";
+import TermsModal from "@/components/TermsModal";
+import { SeRentaLogo } from "@/components/icons/SeRentaLogo";
 
 export default function Home() {
   const appUrl = "https://se-renta-app-web.vercel.app/";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Swipe / drag state
+  const dragStartX = useRef<number | null>(null);
+  const SWIPE_THRESHOLD = 50;
 
   const testimonials = [
     {
@@ -45,10 +52,8 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Hide button when scrolled past 100px
       setIsScrolled(window.scrollY > 100);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -60,12 +65,37 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [testimonials.length]);
 
+  const handleDragStart = (clientX: number) => {
+    dragStartX.current = clientX;
+  };
+
+  const handleDragEnd = (clientX: number) => {
+    if (dragStartX.current === null) return;
+    const delta = dragStartX.current - clientX;
+    if (Math.abs(delta) >= SWIPE_THRESHOLD) {
+      if (delta > 0) {
+        // swipe left → next
+        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+      } else {
+        // swipe right → prev
+        setCurrentTestimonial(
+          (prev) => (prev - 1 + testimonials.length) % testimonials.length,
+        );
+      }
+    }
+    dragStartX.current = null;
+  };
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/20">
-      <main className="max-w-5xl mx-auto px-6 pt-20 pb-32 md:pt-32 md:pb-48 overflow-hidden">
+      <main className="max-w-5xl mx-auto px-6 pt-12 pb-32 md:pt-24 md:pb-48 overflow-hidden">
         {/* Header / Nav */}
-        <header className="flex justify-between items-center mb-24 md:mb-32 animate-fade-in-up">
-          <div className="text-xl font-bold tracking-tighter">SE RENTA</div>
+        <header className="flex justify-between items-center mb-8 md:mb-16 animate-fade-in-up">
+          <SeRentaLogo
+            iconSize={36}
+            fontSize={20}
+            color="white"
+          />
           <Link
             href={appUrl}
             target="_blank"
@@ -81,6 +111,47 @@ export default function Home() {
             🚧 Proyecto en fase de desarrollo (MVP) — Algunas funcionalidades
             aún no están listas
           </div>
+
+          {/* Scroll Down Indicator — visible on mobile BELOW the badge, hidden on desktop (shown below) */}
+          <div
+            className={`flex md:hidden justify-center mb-4 mt-6 transition-opacity duration-500 ${
+              isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
+            }`}
+          >
+            <div className="flex flex-col items-center text-white/50 animate-bounce cursor-default">
+              <span className="text-sm font-medium mb-1 tracking-widest uppercase">
+                Descubre más abajo
+              </span>
+              <div className="flex flex-col items-center">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+                <svg
+                  className="w-6 h-6 -mt-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
           <h1 className="text-5xl md:text-7xl font-semibold tracking-tight leading-tight mb-8">
             Evita fraudes y perder dinero buscando depa. <br />
             <span className="text-gray-400">
@@ -91,9 +162,10 @@ export default function Home() {
             Un mapa comunitario donde las personas confirman qué está disponible
             y reportan posibles fraudes.
           </p>
-          {/* Scroll Down Indicator */}
+
+          {/* Scroll Down Indicator — only on desktop, at the bottom of the hero */}
           <div
-            className={`w-full flex justify-center mt-12 transition-opacity duration-500 ${
+            className={`hidden md:flex w-full justify-center mt-12 transition-opacity duration-500 ${
               isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
             }`}
           >
@@ -367,53 +439,90 @@ export default function Home() {
           <h2 className="text-3xl font-semibold mb-12 text-center">
             Solucionando un problema real
           </h2>
-          <div className="relative max-w-4xl mx-auto h-[280px] sm:h-[220px]">
-            {testimonials.map((testimony, index) => (
-              <div
-                key={index}
-                className={`absolute top-0 left-0 w-full p-8 bg-white/5 border border-white/10 rounded-2xl transition-all duration-700 ease-in-out ${
-                  index === currentTestimonial
-                    ? "opacity-100 translate-x-0 z-10"
-                    : "opacity-0 translate-x-12 z-0 pointer-events-none"
-                }`}
-              >
-                <div className="text-4xl absolute top-6 right-6 opacity-20">
-                  "
-                </div>
-                <p className="text-gray-300 text-lg sm:text-xl italic mb-8 pr-8">
-                  {testimony.quote}
-                </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-12 h-12 rounded-full bg-gradient-to-tr ${testimony.color}`}
-                  ></div>
-                  <div>
-                    <div className="font-medium text-white">
-                      {testimony.author}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {testimony.role}
+
+          {/* Slider container — height adapts to card content */}
+          <div className="relative max-w-4xl mx-auto">
+            <div
+              className="relative overflow-hidden"
+              /* Mouse drag */
+              onMouseDown={(e) => handleDragStart(e.clientX)}
+              onMouseUp={(e) => handleDragEnd(e.clientX)}
+              /* Touch swipe */
+              onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+              onTouchEnd={(e) => handleDragEnd(e.changedTouches[0].clientX)}
+              style={{ cursor: "grab" }}
+            >
+              {testimonials.map((testimony, index) => (
+                <div
+                  key={index}
+                  className={`w-full p-8 bg-white/5 border border-white/10 rounded-2xl transition-all duration-700 ease-in-out select-none ${
+                    index === currentTestimonial
+                      ? "opacity-100 block"
+                      : "opacity-0 hidden"
+                  }`}
+                >
+                  <div className="text-4xl absolute top-6 right-6 opacity-20 select-none">
+                    "
+                  </div>
+                  <p className="text-gray-300 text-lg sm:text-xl italic mb-8 pr-8">
+                    {testimony.quote}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-gradient-to-tr ${testimony.color} flex-shrink-0`}
+                    ></div>
+                    <div>
+                      <div className="font-medium text-white">
+                        {testimony.author}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {testimony.role}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
-            {/* Slider Controls */}
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex gap-2">
+            {/* Dots — now BELOW the card in normal flow */}
+            <div className="flex justify-center gap-2 mt-6">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
+                  className={`h-2.5 rounded-full transition-all cursor-pointer ${
                     index === currentTestimonial
                       ? "bg-white w-6"
-                      : "bg-white/30 hover:bg-white/50"
+                      : "bg-white/30 hover:bg-white/50 w-2.5"
                   }`}
                   aria-label={`Ir al testimonio ${index + 1}`}
                 />
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Agradecimientos / MVP */}
+        <section className="mb-32 md:mb-48 animate-fade-in-up delay-[600ms]">
+          <div className="p-8 md:p-12 rounded-3xl border border-white/10 bg-white/[0.03] text-center">
+            <div className="text-4xl mb-4">🙌</div>
+            <h2 className="text-2xl font-semibold mb-4">
+              Gracias por ser parte de esto
+            </h2>
+            <p className="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto mb-4">
+              SE RENTA es un proyecto independiente, hecho con mucho esfuerzo y
+              cariño por la comunidad mexicana. Estamos en versión{" "}
+              <strong className="text-white">MVP</strong> — significa que
+              todavía estamos construyendo y mejorando día a día.
+            </p>
+            <p className="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto">
+              Si esta app te ha sido útil o crees en la idea,{" "}
+              <strong className="text-white">
+                compártela con alguien que esté buscando dónde vivir
+              </strong>
+              . Cada persona que la use y reporte un letrero hace que el mapa
+              sea más poderoso para todos. 🗺️❤️
+            </p>
           </div>
         </section>
 
@@ -438,8 +547,21 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 animate-fade-in-up delay-500">
-          <div>© {new Date().getFullYear()} SE RENTA.</div>
-          <div className="mt-4 md:mt-0 flex gap-4">
+          <div className="flex items-center gap-3">
+            <SeRentaLogo
+              iconSize={28}
+              fontSize={15}
+              color="#6b7280"
+            />
+            <span className="text-gray-600">© {new Date().getFullYear()}</span>
+          </div>
+          <div className="mt-4 md:mt-0 flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => setIsTermsModalOpen(true)}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Términos y Condiciones
+            </button>
             <Link
               href={appUrl}
               target="_blank"
@@ -472,6 +594,12 @@ export default function Home() {
       <InstallModal
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
+      />
+
+      {/* Terms Modal */}
+      <TermsModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
       />
     </div>
   );
